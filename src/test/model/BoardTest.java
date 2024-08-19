@@ -21,7 +21,7 @@ public class BoardTest {
     }
 
     @Test
-    public void testConstructor() {
+    public void constructorTest() {
         Board board2 = Board.getBoard();
         assertEquals(board, board2);
 
