@@ -20,6 +20,10 @@ public class Board implements Iterable<Integer> {
         return instance;
     }
 
+    public void resetBoard() {
+        board = new int[3][3];
+    }
+
     public int getValue(int row, int col) {
         return board[row][col];
     }
@@ -27,6 +31,8 @@ public class Board implements Iterable<Integer> {
     public void setValue(int val, int row, int col) throws FullException {
         if (getValue(row, col) != 0) {
             throw new FullException();
+        } else if (val != 1 && val != 2) {
+            throw new IllegalArgumentException();
         }
         board[row][col] = val;
     }
