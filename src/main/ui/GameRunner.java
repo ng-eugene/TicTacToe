@@ -58,7 +58,7 @@ public class GameRunner {
 
     // checks board state, setting winner to 1 if the player wins, 2 if the program wins, or -1 if stalemated
     private void checkState() {
-        Boolean full = true;
+        boolean full = true;
         for (int i = 0; i < 3; i++) {
             int[] arr = board.getRow(i);
             if (arr[0] == 0 || arr[1] == 0 || arr[2] == 0) {
@@ -105,10 +105,7 @@ public class GameRunner {
 
     // make a move, looking first for a winning move, then a move to deny player win, then a random move
     private void makeMove() {
-        int[] move = winMove();
-        if (move == null) {
-            move = denyMove();
-        }
+        int[] move = goodMove();
         if (move == null) {
             move = randomMove();
         }
@@ -123,94 +120,53 @@ public class GameRunner {
     }
 
     // look for a winning move first in rows, then cols, then diagonals
-    private int[] winMove() {
-        for (int i = 0; i < 3; i++) {
-            int[] row = board.getRow(i);
-            if (Arrays.equals(row, new int[]{0, 2, 2})) {
-                return new int[]{i, 0};
-            } else if (Arrays.equals(row, new int[]{2, 0, 2})) {
-                return new int[]{i, 1};
-            } else if (Arrays.equals(row, new int[]{2, 2, 0})) {
-                return new int[]{i, 2};
+    // look for a denying move in case no winning move is found
+    private int[] goodMove() {
+        int[] move = null;
+
+        for (int i = 1; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                int[] row = board.getRow(j);
+                if (Arrays.equals(row, new int[]{0, i, i})) {
+                    move = new int[]{j, 0};
+                } else if (Arrays.equals(row, new int[]{i, 0, i})) {
+                    move = new int[]{j, 1};
+                } else if (Arrays.equals(row, new int[]{i, i, 0})) {
+                    move = new int[]{j, 2};
+                }
+            }
+
+            for (int j = 0; j < 3; j++) {
+                int[] col = board.getCol(j);
+                if (Arrays.equals(col, new int[]{0, i, i})) {
+                    move = new int[]{0, j};
+                } else if (Arrays.equals(col, new int[]{i, 0, i})) {
+                    move = new int[]{1, j};
+                } else if (Arrays.equals(col, new int[]{i, i, 0})) {
+                    move = new int[]{2, j};
+                }
+            }
+
+            int[] diag = board.getDiag(0);
+            if (Arrays.equals(diag, new int[]{0, i, i})) {
+                move = new int[]{0, 0};
+            } else if (Arrays.equals(diag, new int[]{i, 0, i})) {
+                move = new int[]{1, 1};
+            } else if (Arrays.equals(diag, new int[]{i, i, 0})) {
+                move = new int[]{2, 2};
+            }
+
+            int[] antidiag = board.getDiag(1);
+            if (Arrays.equals(antidiag, new int[]{0, i, i})) {
+                move = new int[]{2, 0};
+            } else if (Arrays.equals(antidiag, new int[]{i, 0, i})) {
+                move = new int[]{1, 1};
+            } else if (Arrays.equals(antidiag, new int[]{i, i, 0})) {
+                move = new int[]{0, 2};
             }
         }
 
-        for (int i = 0; i < 3; i++) {
-            int[] col = board.getCol(i);
-            if (Arrays.equals(col, new int[]{0, 2, 2})) {
-                return new int[]{0, i};
-            } else if (Arrays.equals(col, new int[]{2, 0, 2})) {
-                return new int[]{1, i};
-            } else if (Arrays.equals(col, new int[]{2, 2, 0})) {
-                return new int[]{2, i};
-            }
-        }
-
-        int[] diag = board.getDiag(0);
-        if (Arrays.equals(diag, new int[]{0, 2, 2})) {
-            return new int[]{0, 0};
-        } else if (Arrays.equals(diag, new int[]{2, 0, 2})) {
-            return new int[]{1, 1};
-        } else if (Arrays.equals(diag, new int[]{2, 2, 0})) {
-            return new int[]{2, 2};
-        }
-
-        int[] antidiag = board.getDiag(1);
-        if (Arrays.equals(antidiag, new int[]{0, 2, 2})) {
-            return new int[]{2, 0};
-        } else if (Arrays.equals(antidiag, new int[]{2, 0, 2})) {
-            return new int[]{1, 1};
-        } else if (Arrays.equals(antidiag, new int[]{2, 2, 0})) {
-            return new int[]{0, 2};
-        }
-
-        return null;
-    }
-
-    // look for a win denying move
-    // merge this with winMove to reduce repeated code
-    private int[] denyMove() {
-        for (int i = 0; i < 3; i++) {
-            int[] row = board.getRow(i);
-            if (Arrays.equals(row, new int[]{0, 1, 1})) {
-                return new int[]{i, 0};
-            } else if (Arrays.equals(row, new int[]{1, 0, 1})) {
-                return new int[]{i, 1};
-            } else if (Arrays.equals(row, new int[]{1, 1, 0})) {
-                return new int[]{i, 2};
-            }
-        }
-
-        for (int i = 0; i < 3; i++) {
-            int[] col = board.getCol(i);
-            if (Arrays.equals(col, new int[]{0, 1, 1})) {
-                return new int[]{0, i};
-            } else if (Arrays.equals(col, new int[]{1, 0, 1})) {
-                return new int[]{1, i};
-            } else if (Arrays.equals(col, new int[]{1, 1, 0})) {
-                return new int[]{2, i};
-            }
-        }
-
-        int[] diag = board.getDiag(0);
-        if (Arrays.equals(diag, new int[]{0, 1, 1})) {
-            return new int[]{0, 0};
-        } else if (Arrays.equals(diag, new int[]{1, 0, 1})) {
-            return new int[]{1, 1};
-        } else if (Arrays.equals(diag, new int[]{1, 1, 0})) {
-            return new int[]{2, 2};
-        }
-
-        int[] antidiag = board.getDiag(1);
-        if (Arrays.equals(antidiag, new int[]{0, 1, 1})) {
-            return new int[]{2, 0};
-        } else if (Arrays.equals(antidiag, new int[]{1, 0, 1})) {
-            return new int[]{1, 1};
-        } else if (Arrays.equals(antidiag, new int[]{1, 1, 0})) {
-            return new int[]{0, 2};
-        }
-
-        return null;
+        return move;
     }
 
     // selects a random move from available slots
