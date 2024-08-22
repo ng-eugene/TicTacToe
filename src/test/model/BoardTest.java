@@ -70,6 +70,25 @@ public class BoardTest {
     }
 
     @Test
+    public void getLineTest() {
+        try {
+            board.setValue(1, 0, 0);
+            board.setValue(2, 1, 1);
+            board.setValue(1, 1, 2);
+            board.setValue(2, 2, 2);
+        } catch (FullException | IllegalArgumentException e) {
+            fail("Unexpected exception thrown");
+        }
+
+        assertArrayEquals(new int[]{1, 0, 0}, board.getRow(0));
+        assertArrayEquals(new int[]{0, 0, 2}, board.getRow(2));
+        assertArrayEquals(new int[]{1, 0, 0}, board.getCol(0));
+        assertArrayEquals(new int[]{0, 1, 2}, board.getCol(2));
+        assertArrayEquals(new int[]{1, 2, 2}, board.getDiag(0));
+        assertArrayEquals(new int[]{0, 2, 0}, board.getDiag(1));
+    }
+
+    @Test
     public void iteratorTest() {
         try {
             board.setValue(1, 0, 0);
