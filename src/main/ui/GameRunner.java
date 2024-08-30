@@ -56,33 +56,13 @@ public class GameRunner {
         printBoard();
     }
 
-    // checks board state, setting winner to 1 if the player wins, 2 if the program wins, or -1 if stalemated
+    // checks board state, setting winner to 1 if the player wins, 2 if the program wins, or 3 if stalemated
     private void checkState() {
-        boolean full = true;
-        for (int i = 0; i < 3; i++) {
-            int[] arr = board.getRow(i);
-            if (arr[0] == 0 || arr[1] == 0 || arr[2] == 0) {
-                full = false;
-            } else if (arr[0] == arr[1] && arr[1] == arr[2]) {
-                winner = arr[0];
-                return;
-            }
+        boolean full = GameRunnerUtil.checkFull();
+        winner = GameRunnerUtil.getWinner();
+        if (winner == 0 && full) {
+            winner = 3;
         }
-        for (int i = 0; i < 3; i++) {
-            int[] arr = board.getCol(i);
-            if (arr[0] == arr[1] && arr[1] == arr[2]) {
-                winner = arr[0];
-                return;
-            }
-        }
-        for (int i = 0; i < 2; i++) {
-            int[] arr = board.getDiag(i);
-            if (arr[0] == arr[1] && arr[1] == arr[2]) {
-                winner = arr[0];
-                return;
-            }
-        }
-        winner = full ? -1 : 0;
     }
 
     // handle player's move
@@ -105,7 +85,7 @@ public class GameRunner {
 
     // make a move, looking first for a winning move, then a move to deny player win, then a random move
     private void makeMove() {
-        int[] move = goodMove();
+        int[] move = GameRunnerUtil.goodMove();
         if (move == null) {
             move = randomMove();
         }
@@ -117,56 +97,6 @@ public class GameRunner {
             System.out.println("Unexpected error.");
             System.exit(0);
         }
-    }
-
-    // look for a winning move first in rows, then cols, then diagonals
-    // look for a denying move in case no winning move is found
-    private int[] goodMove() {
-        int[] move = null;
-
-        for (int i = 1; i < 3; i++) {
-            for (int j = 0; j < 3; j++) {
-                int[] row = board.getRow(j);
-                if (Arrays.equals(row, new int[]{0, i, i})) {
-                    move = new int[]{j, 0};
-                } else if (Arrays.equals(row, new int[]{i, 0, i})) {
-                    move = new int[]{j, 1};
-                } else if (Arrays.equals(row, new int[]{i, i, 0})) {
-                    move = new int[]{j, 2};
-                }
-            }
-
-            for (int j = 0; j < 3; j++) {
-                int[] col = board.getCol(j);
-                if (Arrays.equals(col, new int[]{0, i, i})) {
-                    move = new int[]{0, j};
-                } else if (Arrays.equals(col, new int[]{i, 0, i})) {
-                    move = new int[]{1, j};
-                } else if (Arrays.equals(col, new int[]{i, i, 0})) {
-                    move = new int[]{2, j};
-                }
-            }
-
-            int[] diag = board.getDiag(0);
-            if (Arrays.equals(diag, new int[]{0, i, i})) {
-                move = new int[]{0, 0};
-            } else if (Arrays.equals(diag, new int[]{i, 0, i})) {
-                move = new int[]{1, 1};
-            } else if (Arrays.equals(diag, new int[]{i, i, 0})) {
-                move = new int[]{2, 2};
-            }
-
-            int[] antidiag = board.getDiag(1);
-            if (Arrays.equals(antidiag, new int[]{0, i, i})) {
-                move = new int[]{2, 0};
-            } else if (Arrays.equals(antidiag, new int[]{i, 0, i})) {
-                move = new int[]{1, 1};
-            } else if (Arrays.equals(antidiag, new int[]{i, i, 0})) {
-                move = new int[]{0, 2};
-            }
-        }
-
-        return move;
     }
 
     // selects a random move from available slots
@@ -207,7 +137,5 @@ public class GameRunner {
         }
         System.out.println("\n\n");
     }
-
-
 
 }
